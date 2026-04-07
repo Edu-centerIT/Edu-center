@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.first_name }} - Edu-Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>{{ student.first_name }} {{ student.last_name }}</h1>
+            <p><strong>Phone:</strong> {{ student.phone }}</p>
+            <p><strong>Email:</strong> {{ student.email }}</p>
+            <p><strong>Branch:</strong> {{ student.branch.name }}</p>
+            <p><strong>Status:</strong> {{ student.status }}</p>
+
+            {% if parent %}
+            <h3>Parent/Guardian</h3>
+            <p><strong>Name:</strong> {{ parent.name }}</p>
+            <p><strong>Phone:</strong> {{ parent.phone }}</p>
+            <p><strong>Relationship:</strong> {{ parent.relationship }}</p>
+            {% endif %}
+
+            <div style="margin-top: 20px;">
+                <a href="{% url 'student_edit' student.pk %}" class="btn">Edit</a>
+                <a href="{% url 'student_archive' student.pk %}" class="btn">Archive</a>
+                <a href="{% url 'student_list' %}" class="btn">Back to List</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Attendance History</h3>
+            <p><strong>Attended:</strong> {{ attended }} | <strong>Missed:</strong> {{ missed }}</p>
+            
+            {% if attendance_records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.lesson.date }}</td>
+                        <td>{{ record.lesson.subject.name }}</td>
+                        <td>{% if record.is_present %}✓ Present{% else %}✗ Absent{% endif %}</td>
+                        <td>{{ record.notes }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No attendance records yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

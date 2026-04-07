@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lessons - Edu-Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .navbar {
+            background: #333;
+            color: white;
+            padding: 15px 30px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .filter-form {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .filter-form select, .filter-form button {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .status-scheduled {
+            background: #e3f2fd;
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+        .status-completed {
+            background: #e8f5e9;
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+        .status-cancelled {
+            background: #ffebee;
+            padding: 4px 8px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>📖 Lessons Management</h1>
+    </div>
+
+    <div class="container">
+        <a href="{% url 'dashboard' %}" class="btn">← Back</a>
+        <a href="{% url 'lesson_create' %}" class="btn">+ Create Lesson</a>
+
+        <div class="filter-form">
+            <form method="get">
+                <select name="branch">
+                    <option value="">All Branches</option>
+                    {% for branch in branches %}
+                    <option value="{{ branch.id }}" {% if branch.id == selected_branch|add:"0" %}selected{% endif %}>
+                        {{ branch.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select name="teacher">
+                    <option value="">All Teachers</option>
+                    {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}" {% if teacher.id == selected_teacher|add:"0" %}selected{% endif %}>
+                        {{ teacher.first_name }} {{ teacher.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select name="status">
+                    <option value="SCHEDULED" {% if selected_status == "SCHEDULED" %}selected{% endif %}>Scheduled</option>
+                    <option value="COMPLETED" {% if selected_status == "COMPLETED" %}selected{% endif %}>Completed</option>
+                    <option value="CANCELLED" {% if selected_status == "CANCELLED" %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit">Filter</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Teacher</th>
+                    <th>Subject</th>
+                    <th>Type</th>
+                    <th>Student/Group</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.date }}</td>
+                    <td>{{ lesson.start_time }} - {{ lesson.end_time }}</td>
+                    <td>{{ lesson.teacher.first_name }} {{ lesson.teacher.last_name }}</td>
+                    <td>{{ lesson.subject.name }}</td>
+                    <td>{{ lesson.lesson_type }}</td>
+                    <td>
+                        {% if lesson.lesson_type == 'individual' %}
+                            {{ lesson.student.first_name }} {{ lesson.student.last_name }}
+                        {% else %}
+                            {{ lesson.group.name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="status-{{ lesson.status|lower }}">{{ lesson.status }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'lesson_detail' lesson.pk %}">View</a>
+                        {% if lesson.status == 'SCHEDULED' %}
+                            <a href="{% url 'lesson_edit' lesson.pk %}">Edit</a>
+                            <a href="{% url 'lesson_cancel' lesson.pk %}">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

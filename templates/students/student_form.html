@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if is_edit %}Edit{% else %}Create{% endif %} Student - Edu-Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .cancel-btn {
+            background: #999;
+            margin-left: 10px;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{% if is_edit %}Edit Student{% else %}Create New Student{% endif %}</h1>
+
+        {% if messages %}
+        <div style="background: #fee; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <h3>Student Information</h3>
+
+            <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" value="{{ student.first_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" value="{{ student.last_name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth</label>
+                <input type="date" id="date_of_birth" name="date_of_birth" value="{{ student.date_of_birth }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" value="{{ student.phone }}">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ student.email }}">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address">{{ student.address }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="branch">Branch *</label>
+                <select id="branch" name="branch" required>
+                    <option value="">Select Branch</option>
+                    {% for branch in branches %}
+                    <option value="{{ branch.id }}" {% if student.branch_id == branch.id %}selected{% endif %}>
+                        {{ branch.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <h3>Parent/Guardian Information</h3>
+
+            <div class="form-group">
+                <label for="parent_name">Parent Name</label>
+                <input type="text" id="parent_name" name="parent_name" value="{{ parent.name }}">
+            </div>
+
+            <div class="form-group">
+                <label for="parent_phone">Parent Phone</label>
+                <input type="tel" id="parent_phone" name="parent_phone" value="{{ parent.phone }}">
+            </div>
+
+            <div class="form-group">
+                <label for="parent_email">Parent Email</label>
+                <input type="email" id="parent_email" name="parent_email" value="{{ parent.email }}">
+            </div>
+
+            <div class="form-group">
+                <label for="parent_relationship">Relationship</label>
+                <input type="text" id="parent_relationship" name="parent_relationship" value="{{ parent.relationship }}" placeholder="e.g., Mother, Father">
+            </div>
+
+            <button type="submit">{% if is_edit %}Update{% else %}Create{% endif %}</button>
+            <a href="{% url 'student_list' %}" class="cancel-btn">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
