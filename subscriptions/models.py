@@ -1,5 +1,7 @@
 from django.db import models
-from branches.models import Branch ,Subject, Student
+from branches.models import Branch
+from subjects.models import Subject  # ✅ З subjects
+from students.models import Student  # ✅ З students
 
 
 # Create your models here.

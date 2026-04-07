@@ -1,5 +1,16 @@
 from django.db import models
-from branches.models import Branch , CustomUser, Subject, Student,Group
+
+from branches.models import Branch
+from subjects.models import Subject  # ✅ З subjects
+from students.models import Student  # ✅ З students
+# from groups.models import Group # ✅ З students
+
+from django.contrib.auth import get_user_model
+
+from groups.models import Group
+
+CustomUser = get_user_model()
+
 
 # Create your models here.
 class LessonTemplate(models.Model):

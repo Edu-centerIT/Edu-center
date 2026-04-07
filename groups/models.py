@@ -1,5 +1,6 @@
 from django.db import models
-from branches.models import Branch,Student
+from branches.models import Branch 
+from students.models import Student  
 
 # Create your models here.
 class Group(models.Model):
