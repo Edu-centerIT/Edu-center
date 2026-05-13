@@ -17,3 +17,4 @@ class LessonAdmin(admin.ModelAdmin):
 class LessonTemplateAdmin(admin.ModelAdmin):
     list_display = ['id', 'teacher', 'subject', 'lesson_type', 'status']
     list_filter = ['status', 'lesson_type']
+    

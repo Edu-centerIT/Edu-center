@@ -5,12 +5,12 @@ from students.models import Student
 # Create your models here.
 class Group(models.Model):
     name = models.CharField(max_length=255)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE) #CASCADE-branch видалили — всі пов’язані записи теж
     students = models.ManyToManyField(Student, through='GroupMembership')
     status = models.CharField(
         max_length=10,
         choices=[('active', 'Active'), ('archived', 'Archived')],
-        default='active'
+        default='active' #значення поля за замовчуванням
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

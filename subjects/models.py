@@ -13,4 +13,4 @@ class Subject(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        unique_together = ('name', 'branch')
+        unique_together = ('name', 'branch')     

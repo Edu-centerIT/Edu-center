@@ -8,4 +8,4 @@ urlpatterns = [
     path('<int:pk>/edit/', views.group_edit, name='group_edit'),
     path('<int:pk>/add-student/', views.add_student_to_group, name='add_student_to_group'),
     path('<int:pk>/remove-student/<int:student_id>/', views.remove_student_from_group, name='remove_student_from_group'),
-]
+] 

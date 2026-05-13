@@ -25,7 +25,7 @@ def group_list(request):
     groups = Group.objects.filter(status='active')
     branches = Branch.objects.filter(status='active')
     
-    branch_id = request.GET.get('branch')
+    branch_id = request.GET.get('branch') # request.GET дані з URL (рядка зверху браузера)
     if branch_id:
         groups = groups.filter(branch_id=branch_id)
     
@@ -47,8 +47,8 @@ def group_create(request):
     
     branches = Branch.objects.filter(status='active')
     
-    if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
+    if request.method == 'POST': 
+        name = request.POST.get('name', '').strip() #request.POST всі дані, які прийшли з HTML-форми
         branch_id = request.POST.get('branch')
         
         if not name or not branch_id:
@@ -79,14 +79,14 @@ def group_detail(request, pk):
     group = get_object_or_404(Group, pk=pk)
     
     # Поточні члени групи
-    memberships = GroupMembership.objects.filter(group=group, left_at__isnull=True)
-    students_in_group = [m.student for m in memberships]
+    memberships = GroupMembership.objects.filter(group=group, left_at__isnull=True) #left_at__isnull=True ще не покинули групу
+    students_in_group = [m.student for m in memberships] # список студентів у групі
     
     # Доступні студенти для додавання
     available_students = Student.objects.filter(
         branch=group.branch,
         status='active'
-    ).exclude(id__in=students_in_group)
+    ).exclude(id__in=students_in_group) #виключаєш: тих, хто вже в групі
     
     context = {
         'group': group,
@@ -98,7 +98,7 @@ def group_detail(request, pk):
 
 @login_required(login_url='login')
 @require_http_methods(["GET", "POST"])
-def group_edit(request, pk):
+def group_edit(request, pk): #редагування групи
     """Редагувати групу"""
     if not check_admin(request.user):
         messages.error(request, 'Access denied')
@@ -110,7 +110,7 @@ def group_edit(request, pk):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         
-        if not name:
+        if not name: #якщо пусто
             messages.error(request, 'Group name is required')
             return render(request, 'groups/group_form.html', {
                 'group': group,
@@ -141,14 +141,15 @@ def add_student_to_group(request, pk):
     group = get_object_or_404(Group, pk=pk)
     
     if request.method == 'POST':
-        student_id = request.POST.get('student_id')
+        student_id = request.POST.get('student_id') #беремо ID студента з форми
         student = get_object_or_404(Student, pk=student_id, branch=group.branch, status='active')
         
         # Перевіримо, чи вже в групі
-        if GroupMembership.objects.filter(group=group, student=student, left_at__isnull=True).exists():
+        if GroupMembership.objects.filter(group=group, student=student, left_at__isnull=True).exists(): #left_at__isnull=True = ще не видалений
+                                                                                            # .exists(): Чи є цей студент уже в цій групі (і ще не видалений)?
             messages.warning(request, f'"{student.first_name}" is already in this group')
         else:
-            GroupMembership.objects.create(group=group, student=student)
+            GroupMembership.objects.create(group=group, student=student) #створюєш зв’язок: студент ↔ група
             messages.success(request, f'"{student.first_name}" added to group')
     
     return redirect('group_detail', pk=group.pk)
@@ -156,7 +157,7 @@ def add_student_to_group(request, pk):
 
 @login_required(login_url='login')
 def remove_student_from_group(request, pk, student_id):
-    """Видалити студента з групи"""
+    """Видалити студента з групи""" #soft delete
     if not check_admin(request.user):
         messages.error(request, 'Access denied')
         return redirect('dashboard')
@@ -164,9 +165,9 @@ def remove_student_from_group(request, pk, student_id):
     group = get_object_or_404(Group, pk=pk)
     membership = get_object_or_404(GroupMembership, group=group, student_id=student_id, left_at__isnull=True)
     
-    student_name = membership.student.first_name
+    student_name = membership.student.first_name #Запам’ятовуємо ім’я для повідомлення
     from django.utils import timezone
-    membership.left_at = timezone.now()
+    membership.left_at = timezone.now() #ставимо дату виходу
     membership.save()
     
     messages.success(request, f'"{student_name}" removed from group')

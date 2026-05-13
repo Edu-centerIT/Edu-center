@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -10,6 +7,7 @@ from branches.models import Branch
 
 
 def check_admin(user):
+    """Перевірити, чи користувач є адміністратором"""
     return user.is_authenticated and user.role == 'ADMIN'
 
 
@@ -119,3 +117,14 @@ def subject_archive(request, pk):
     subject.save()
     messages.success(request, f'Subject "{subject.name}" archived')
     return redirect('subject_list')
+
+
+@login_required(login_url='login')
+def subject_detail(request, pk):
+    """Деталі предмету"""
+    subject = get_object_or_404(Subject, pk=pk)
+    
+    context = {
+        'subject': subject,
+    }
+    return render(request, 'subjects/subject_detail.html', context)

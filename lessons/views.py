@@ -24,14 +24,14 @@ def lesson_list(request):
         messages.error(request, 'Access denied')
         return redirect('dashboard')
     
-    lessons = Lesson.objects.filter(status='SCHEDULED').order_by('date', 'start_time')
+    lessons = Lesson.objects.filter(status='SCHEDULED').order_by('date', 'start_time') #order_by() сортування записів у базі даних
     
     # Для вчителя показуємо тільки його уроки
     if request.user.role == 'TEACHER':
         lessons = lessons.filter(teacher=request.user)
     
     # Фільтрація
-    teacher_id = request.GET.get('teacher')
+    teacher_id = request.GET.get('teacher') #request.GET url
     branch_id = request.GET.get('branch')
     status = request.GET.get('status', 'SCHEDULED')
     
@@ -42,6 +42,7 @@ def lesson_list(request):
     if status:
         lessons = Lesson.objects.filter(status=status).order_by('date', 'start_time')
     
+    #Дані для шаблону
     teachers = CustomUser.objects.filter(role='TEACHER')
     branches = Branch.objects.filter(status='active')
     
@@ -65,7 +66,7 @@ def lesson_create(request):
         return redirect('dashboard')
     
     if request.method == 'POST':
-        lesson_type = request.POST.get('lesson_type')
+        lesson_type = request.POST.get('lesson_type') #request.POST html forms
         teacher_id = request.POST.get('teacher')
         subject_id = request.POST.get('subject')
         branch_id = request.POST.get('branch')
@@ -75,7 +76,7 @@ def lesson_create(request):
         
         # Валідація
         errors = []
-        if not all([lesson_type, teacher_id, subject_id, branch_id, date_str, start_time_str, end_time_str]):
+        if not all([lesson_type, teacher_id, subject_id, branch_id, date_str, start_time_str, end_time_str]): #Перевірка, що всі поля заповнені
             errors.append('All fields are required')
         
         if errors:
@@ -84,12 +85,12 @@ def lesson_create(request):
             return render(request, 'lessons/lesson_form.html', get_context(request))
         
         try:
-            lesson_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-            start_time = datetime.strptime(start_time_str, '%H:%M').time()
+            lesson_date = datetime.strptime(date_str, '%Y-%m-%d').date() #strptime перетворення рядка → у дату/час. %Y → рік, %m → місяць, %d → день
+            start_time = datetime.strptime(start_time_str, '%H:%M').time() # %H → години, %M → хвилини
             end_time = datetime.strptime(end_time_str, '%H:%M').time()
         except ValueError:
             messages.error(request, 'Invalid date or time format')
-            return render(request, 'lessons/lesson_form.html', get_context(request))
+            return render(request, 'lessons/lesson_form.html', get_context(request)) # get_context(request) шаблон 
         
         if start_time >= end_time:
             messages.error(request, 'Start time must be before end time')
@@ -100,14 +101,14 @@ def lesson_create(request):
         branch = get_object_or_404(Branch, pk=branch_id)
         
         # Перевірка конфліктів вчителя
-        is_valid, error = check_teacher_conflict(teacher, lesson_date, start_time, end_time)
+        is_valid, error = check_teacher_conflict(teacher, lesson_date, start_time, end_time) #Чи НЕ має цей вчитель вже уроку в цей час?
         if not is_valid:
             messages.error(request, f'Conflict: {error}')
             return render(request, 'lessons/lesson_form.html', get_context(request))
         
         if lesson_type == 'individual':
             student_id = request.POST.get('student')
-            if not student_id:
+            if not student_id: #не вибрали студента
                 messages.error(request, 'Student is required for individual lesson')
                 return render(request, 'lessons/lesson_form.html', get_context(request))
             
@@ -187,7 +188,7 @@ def lesson_edit(request, pk):
     
     lesson = get_object_or_404(Lesson, pk=pk)
     
-    if lesson.status != 'SCHEDULED':
+    if lesson.status != 'SCHEDULED': #редагувати можна тільки: заплановані уроки
         messages.error(request, 'Can only edit scheduled lessons')
         return redirect('lesson_detail', pk=lesson.pk)
     
@@ -207,21 +208,22 @@ def lesson_edit(request, pk):
             messages.error(request, 'Invalid date or time format')
             return render(request, 'lessons/lesson_form.html', {
                 'lesson': lesson,
-                **get_context(request)
+                **get_context(request) #додає всі ключі з get_context у цей словник
             })
         
         teacher = get_object_or_404(CustomUser, pk=teacher_id)
         subject = get_object_or_404(Subject, pk=subject_id)
         
         # Перевірка конфліктів (виключаючи поточний урок)
-        is_valid, error = check_teacher_conflict(teacher, lesson_date, start_time, end_time, exclude_lesson=lesson)
+        is_valid, error = check_teacher_conflict(teacher, lesson_date, start_time, end_time, exclude_lesson=lesson) #виключаючи поточний урок
         if not is_valid:
             messages.error(request, f'Conflict: {error}')
             return render(request, 'lessons/lesson_form.html', {
                 'lesson': lesson,
-                **get_context(request)
+                **get_context(request) #додає всі ключі з get_context у цей словник
             })
         
+        # Оновлення уроку
         lesson.teacher = teacher
         lesson.subject = subject
         lesson.date = lesson_date
@@ -232,7 +234,7 @@ def lesson_edit(request, pk):
         messages.success(request, 'Lesson updated')
         return redirect('lesson_detail', pk=lesson.pk)
     
-    context = {
+    context = { # відкриває форму з уже заповненими даними
         'lesson': lesson,
         **get_context(request)
     }
@@ -241,7 +243,7 @@ def lesson_edit(request, pk):
 
 @login_required(login_url='login')
 def lesson_cancel(request, pk):
-    """Скасувати урок"""
+    """Скасувати урок""" #soft delete
     if not check_admin(request.user):
         messages.error(request, 'Access denied')
         return redirect('dashboard')
@@ -254,7 +256,7 @@ def lesson_cancel(request, pk):
     return redirect('lesson_list')
 
 
-def get_context(request):
+def get_context(request): #це функція, яка повертає дані для шаблонів
     """Допоміжна функція для отримання контексту"""
     return {
         'teachers': CustomUser.objects.filter(role='TEACHER'),

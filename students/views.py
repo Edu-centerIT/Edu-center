@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
@@ -25,8 +25,8 @@ def student_list(request):
     students = Student.objects.filter(status='active')
     
     # Фільтрація
-    branch_id = request.GET.get('branch')
-    search = request.GET.get('search', '').strip()
+    branch_id = request.GET.get('branch') #url
+    search = request.GET.get('search', '').strip() # url name , прибирає пробіли
     
     if branch_id:
         students = students.filter(branch_id=branch_id)
@@ -60,8 +60,8 @@ def student_create(request):
     branches = Branch.objects.filter(status='active')
     
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
+        first_name = request.POST.get('first_name', '').strip() #прибирає пробіли
+        last_name = request.POST.get('last_name', '').strip()#request.POST html forms
         date_of_birth = request.POST.get('date_of_birth')
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip()
@@ -74,7 +74,7 @@ def student_create(request):
         parent_email = request.POST.get('parent_email', '').strip()
         parent_relationship = request.POST.get('parent_relationship', '').strip()
         
-        if not first_name or not last_name or not branch_id:
+        if not first_name or not last_name or not branch_id: # Валідація
             messages.error(request, 'Name and branch are required')
             return render(request, 'students/student_form.html', {'branches': branches})
         
@@ -118,9 +118,9 @@ def student_detail(request, pk):
     parent = Parent.objects.filter(student=student).first()
     
     # Історія відвідування
-    attendance_records = Attendance.objects.filter(student=student).select_related('lesson').order_by('-recorded_at')
-    attended = attendance_records.filter(is_present=True).count()
-    missed = attendance_records.filter(is_present=False).count()
+    attendance_records = Attendance.objects.filter(student=student).select_related('lesson').order_by('-recorded_at') #одразу підтягує lesson   order_by('-recorded_at сортує: нові → зверху старі → знизу
+    attended = attendance_records.filter(is_present=True).count() #скільки разів був
+    missed = attendance_records.filter(is_present=False).count() #скільки пропустив
     
     context = {
         'student': student,
@@ -155,7 +155,7 @@ def student_edit(request, pk):
         if not student.first_name or not student.last_name:
             messages.error(request, 'Name fields are required')
             return render(request, 'students/student_form.html', {
-                'student': student,
+                'student': student, # об’єднує: HTML-шаблон (student_form.html) i дані (context)
                 'parent': parent,
                 'branches': branches
             })

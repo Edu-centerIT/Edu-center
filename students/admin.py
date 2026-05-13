@@ -15,4 +15,4 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Parent)
 class ParentAdmin(admin.ModelAdmin):
     list_display = ['name', 'student', 'phone']
-    search_fields = ['name', 'phone']
+    search_fields = ['name', 'phone']  

@@ -1,7 +1,7 @@
 from django.db import models
 from branches.models import Branch
-from subjects.models import Subject  # ✅ З subjects
-from students.models import Student  # ✅ З students
+from subjects.models import Subject  
+from students.models import Student 
 
 
 # Create your models here.
@@ -20,9 +20,9 @@ class SubscriptionPlan(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class PricingTier(models.Model):
-    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE, related_name='tiers')
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE, related_name='tiers') #уровнi
     lessons_per_month = models.IntegerField()
-    price_per_lesson = models.DecimalField(max_digits=10, decimal_places=2)
+    price_per_lesson = models.DecimalField(max_digits=10, decimal_places=2) #це скільки цифр після коми
 
 class StudentSubscription(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

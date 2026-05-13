@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
@@ -26,13 +26,13 @@ def lesson_attendance(request, lesson_id):
     if lesson.lesson_type == 'individual':
         students = [lesson.student]
     else:  # group
-        memberships = GroupMembership.objects.filter(group=lesson.group, left_at__isnull=True)
-        students = [m.student for m in memberships]
+        memberships = GroupMembership.objects.filter(group=lesson.group, left_at__isnull=True) #якщо ти не вийшов
+        students = [m.student for m in memberships] #Пройтись по всіх memberships і витягнути з кожного студента
     
     if request.method == 'POST':
         for student in students:
             is_present = request.POST.get(f'is_present_{student.id}') == 'on'
-            notes = request.POST.get(f'notes_{student.id}', '').strip()
+            notes = request.POST.get(f'notes_{student.id}', '').strip() #.strip() прибирає пробіли
             
             # Обновити або створити запис
             attendance, created = Attendance.objects.update_or_create(
@@ -79,13 +79,13 @@ def student_attendance_history(request, student_id):
         return redirect('dashboard')
     
     student = get_object_or_404(Student, pk=student_id)
-    attendance_records = Attendance.objects.filter(student=student).select_related('lesson').order_by('-lesson__date')
+    attendance_records = Attendance.objects.filter(student=student).select_related('lesson').order_by('-lesson__date') #без цього: Django робить купу запитів, від нових до старих
     
     # Статистика
-    total = attendance_records.count()
-    attended = attendance_records.filter(is_present=True).count()
-    missed = total - attended
-    percentage = (attended / total * 100) if total > 0 else 0
+    total = attendance_records.count() #всього занять
+    attended = attendance_records.filter(is_present=True).count() #скільки відвідав
+    missed = total - attended #пропускиv
+    percentage = (attended / total * 100) if total > 0 else 0 #відсоток відвідування
     
     context = {
         'student': student,
@@ -96,3 +96,4 @@ def student_attendance_history(request, student_id):
         'percentage': round(percentage, 1),
     }
     return render(request, 'attendance/student_attendance_history.html', context)
+

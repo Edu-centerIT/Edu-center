@@ -23,8 +23,8 @@ def branch_list(request):
         messages.error(request, 'Access denied')
         return redirect('dashboard')
     
-    branches = Branch.objects.filter(status='active').order_by('name')
-    archived = Branch.objects.filter(status='archived').count()
+    branches = Branch.objects.filter(status='active').order_by('name') #сортування order_by
+    archived = Branch.objects.filter(status='archived').count() #count() рахування
     
     context = {
         'branches': branches,
@@ -42,15 +42,15 @@ def branch_create(request):
         return redirect('dashboard')
     
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
+        name = request.POST.get('name', '').strip() # .strip() прибирає пробіли
         address = request.POST.get('address', '').strip()
         city = request.POST.get('city', '').strip()
         
-        if not name or not address or not city:
+        if not name or not address or not city: #валідація
             messages.error(request, 'All fields are required')
             return render(request, 'branches/branch_form.html')
         
-        if Branch.objects.filter(name=name).exists():
+        if Branch.objects.filter(name=name).exists(): #якщо така філія вже є: не даєш створити ще одну
             messages.error(request, 'Branch with this name already exists')
             return render(request, 'branches/branch_form.html')
         
@@ -60,7 +60,7 @@ def branch_create(request):
             city=city,
             status='active'
         )
-        messages.success(request, f'Branch "{branch.name}" created successfully')
+        messages.success(request, f'Branch "{branch.name}" created successfully') # f'.."{zmina}"..' Він дозволяє вставляти змінні прямо в текст
         return redirect('branch_detail', pk=branch.pk)
     
     return render(request, 'branches/branch_form.html')
@@ -77,8 +77,8 @@ def branch_detail(request, pk):
     
     context = {
         'branch': branch,
-        'students_count': Student.objects.filter(branch=branch, status='active').count(),
-        'lessons_count': Lesson.objects.filter(branch=branch, status='SCHEDULED').count(),
+        'students_count': Student.objects.filter(branch=branch, status='active').count(), #скільки активних студентів у філії
+        'lessons_count': Lesson.objects.filter(branch=branch, status='SCHEDULED').count(), #скільки запланованих уроків
     }
     return render(request, 'branches/branch_detail.html', context)
 
@@ -94,13 +94,13 @@ def branch_edit(request, pk):
     branch = get_object_or_404(Branch, pk=pk)
     
     if request.method == 'POST':
-        branch.name = request.POST.get('name', '').strip()
+        branch.name = request.POST.get('name', '').strip() #и прямо змінюєш поля об’єкта
         branch.address = request.POST.get('address', '').strip()
         branch.city = request.POST.get('city', '').strip()
         
-        if not branch.name or not branch.address or not branch.city:
+        if not branch.name or not branch.address or not branch.city: #Валідація
             messages.error(request, 'All fields are required')
-            return render(request, 'branches/branch_form.html', {'branch': branch})
+            return render(request, 'branches/branch_form.html', {'branch': branch}) #форма повертається з уже введеними даними
         
         branch.save()
         messages.success(request, 'Branch updated successfully')

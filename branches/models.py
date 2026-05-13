@@ -10,4 +10,5 @@ class Branch(models.Model):
         choices=[('active', 'Active'), ('archived', 'Archived')],
         default='active'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)#автоматично оновлюється кожного разу при збереженні
+    

@@ -13,7 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
     
     def save(self, commit=True):
         user = super().save(commit=False)
-        # ✅ Встановити username = phone
+        # Встановити username = phone
         user.username = user.phone
         if commit:
             user.save()
@@ -29,7 +29,7 @@ class CustomUserChangeForm(UserChangeForm):
     
     def save(self, commit=True):
         user = super().save(commit=False)
-        # ✅ Синхронізувати username = phone
+        # Синхронізувати username = phone
         user.username = user.phone
         if commit:
             user.save()
