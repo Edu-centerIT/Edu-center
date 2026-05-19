@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-cp3z8m2(s4p-p6sshxq+n^+s6dm=1+y=f=wyd73dq#s-ctlq83
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # ✅ REST Framework & Swagger
+    'rest_framework',
+    'drf_spectacular',
+    
+    # Custom apps
     'users',
     'branches',
     'subjects',
@@ -62,8 +68,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # ✅ ПУСТО - Django сам знайде шаблони в app-specific папках
-        'APP_DIRS': True,  # ✅ ЦЕ ВАЖЛИВО!
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -127,6 +133,42 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-
-
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# ✅ REST FRAMEWORK CONFIGURATION
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# ✅ SPECTACULAR/SWAGGER CONFIGURATION
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Edu-Center API',
+    'DESCRIPTION': 'API для системи управління освітнім центром',
+    'VERSION': '1.0.0',
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'SERVE_AUTHENTICATION': None,
+    'SCHEMA_PATH_PREFIX': r'/api/v1',
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorizationData': True,
+        'displayOperationId': True,
+    },
+    'CONTACT': {
+        'name': 'Edu-Center Support',
+        'email': 'support@edu-center.com',
+    },
+    'LICENSE': {
+        'name': 'BSD License',
+    },
+}

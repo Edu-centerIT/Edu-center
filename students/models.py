@@ -17,6 +17,9 @@ class Student(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
+
 class Parent(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name='parent')
     name = models.CharField(max_length=255)
