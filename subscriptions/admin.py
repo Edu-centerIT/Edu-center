@@ -1,7 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
-from django.contrib import admin
 from .models import SubscriptionPlan, PricingTier, StudentSubscription
 
 
@@ -15,9 +12,14 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 
 @admin.register(PricingTier)
 class PricingTierAdmin(admin.ModelAdmin):
-    list_display = ['plan', 'lessons_per_month', 'price_per_lesson', 'total_cost']
+    #  ВИДАЛИЛИ total_cost (обчислюється в методі)
+    list_display = ['plan', 'lessons_per_month', 'price_per_lesson', 'get_total_cost']
     list_filter = ['plan']
-    readonly_fields = ['total_cost']
+    
+    def get_total_cost(self, obj):
+        """Обчислити загальну вартість"""
+        return obj.lessons_per_month * obj.price_per_lesson
+    get_total_cost.short_description = 'Total Cost'
 
 
 @admin.register(StudentSubscription)

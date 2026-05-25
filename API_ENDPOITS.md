@@ -1,5 +1,7 @@
 # Educational Center API Endpoints
 
+#шпаргалка або текстовий путівник по вашому API, швидка текстова копія Swaggera
+
 ## Authentication
 - POST /api/auth/login/ — Login with phone & password
 - POST /api/auth/refresh/ — Refresh access token

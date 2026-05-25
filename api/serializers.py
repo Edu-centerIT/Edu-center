@@ -6,6 +6,10 @@ from students.models import Student, Parent
 from groups.models import Group, GroupMembership
 from lessons.models import Lesson
 from attendance.models import Attendance
+from subscriptions.models import SubscriptionPlan, PricingTier, StudentSubscription  #  ВИПРАВЛЕНО
+
+
+#це двосторонній перекладач між мовою Python (якою написаний Django) та мовою JSON (якою спілкуються браузери, мобільні додатки та Swagger).
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -38,7 +42,7 @@ class ParentSerializer(serializers.ModelSerializer):
     """Serializer для батьків"""
     class Meta:
         model = Parent
-        fields = ['id', 'student', 'name', 'phone', 'email', 'relationship']
+        fields = ['id', 'student', 'first_name', 'last_name', 'phone', 'email', 'relationship']
         read_only_fields = ['id']
 
 
@@ -75,7 +79,7 @@ class GroupSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
     
     def get_members_count(self, obj):
-        return obj.students.count()
+        return obj.students.count() #підрахунок
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -101,16 +105,11 @@ class AttendanceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Attendance
-        fields = ['id', 'lesson', 'lesson_info', 'student', 'student_name', 'is_present', 'notes']
-        read_only_fields = ['id']
+        fields = ['id', 'lesson', 'lesson_info', 'student', 'student_name', 'is_present', 'notes', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
-
-
-from rest_framework import serializers
-from .models import SubscriptionPlan, PricingTier, StudentSubscription
-
-
+#  SUBSCRIPTION SERIALIZERS
 class PricingTierSerializer(serializers.ModelSerializer):
     """Serializer для цінових рівнів"""
     total_cost = serializers.SerializerMethodField()
@@ -121,7 +120,7 @@ class PricingTierSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
     
     def get_total_cost(self, obj):
-        return obj.lessons_per_month * obj.price_per_lesson
+        return obj.lessons_per_month * obj.price_per_lesson #перемножує кількість занять на місяць на ціну одного заняття
 
 
 class SubscriptionPlanSerializer(serializers.ModelSerializer):
@@ -144,12 +143,6 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
     
     def get_subjects_count(self, obj):
         return obj.subjects.count()
-
-
-
-
-
-
 
 
 class StudentSubscriptionSerializer(serializers.ModelSerializer):

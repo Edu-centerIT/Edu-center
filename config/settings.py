@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # ✅ REST Framework & Swagger
+    # REST Framework & Swagger
     'rest_framework',
     'drf_spectacular',
     
@@ -135,7 +135,7 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# ✅ REST FRAMEWORK CONFIGURATION
+#                      REST FRAMEWORK CONFIGURATION
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# ✅ SPECTACULAR/SWAGGER CONFIGURATION
+#                          SPECTACULAR/SWAGGER CONFIGURATION
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Edu-Center API',
     'DESCRIPTION': 'API для системи управління освітнім центром',

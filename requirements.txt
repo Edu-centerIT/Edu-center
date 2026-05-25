@@ -1,4 +1,4 @@
-
+#Список необхідних бібліотек
 
 Django==6.0.4
 djangorestframework==3.14.0

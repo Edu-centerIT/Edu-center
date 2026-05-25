@@ -19,6 +19,8 @@ from .serializers import (
 )
 
 
+#Файл, який приймає запити зі Swagger, звертається до потрібної моделі, просить серіалізатор обробити дані та повертає відповідь.
+
 class CustomUserViewSet(viewsets.ModelViewSet):
     """
     API для управління користувачами.
@@ -29,15 +31,17 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     update: Оновити користувача
     destroy: Видалити користувача
     """
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all() #з якої саме таблиці
+    serializer_class = CustomUserSerializer #якого саме (серіалізатор)
+    permission_classes = [IsAuthenticated] #Система безпеки. Пам'ятаєте замочки
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get']) #створює нову, окрему кнопку у вашому Swagger
     def teachers(self, request):
-        """Отримати список вчителів"""
+     # 1. Фільтруємо базу: беремо лише тих, у кого роль 'TEACHER' і профіль активний
         teachers = CustomUser.objects.filter(role='TEACHER', is_active=True)
+    # 2. Передаємо цей список нашому перекладачу
         serializer = self.get_serializer(teachers, many=True)
+    # 3. Віддаємо готовий JSON у Swagger
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
@@ -49,15 +53,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 
 class BranchViewSet(viewsets.ModelViewSet):
-    """
-    API для управління філіями.
+  
     
-    list: Отримати список всіх філій
-    create: Створити нову філію
-    retrieve: Отримати деталі філії
-    update: Оновити філію
-    destroy: Видалити філію
-    """
     serializer_class = BranchSerializer
     permission_classes = [IsAuthenticated]
     
@@ -67,21 +64,13 @@ class BranchViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def archived(self, request):
         """Отримати архівовані філії"""
-        archived_branches = Branch.objects.filter(status='archived')
+        archived_branches = Branch.objects.filter(status='archived') #
         serializer = self.get_serializer(archived_branches, many=True)
         return Response(serializer.data)
 
 
 class SubjectViewSet(viewsets.ModelViewSet):
-    """
-    API для управління предметами.
-    
-    list: Отримати список всіх предметів
-    create: Створити новий предмет
-    retrieve: Отримати деталі предмета
-    update: Оновити предмет
-    destroy: Видалити предмет
-    """
+   
     serializer_class = SubjectSerializer
     permission_classes = [IsAuthenticated]
     
@@ -105,15 +94,8 @@ class SubjectViewSet(viewsets.ModelViewSet):
 
 
 class StudentViewSet(viewsets.ModelViewSet):
-    """
-    API для управління студентами.
     
-    list: Отримати список всіх студентів
-    create: Створити нового студента
-    retrieve: Отримати деталі студента
-    update: Оновити студента
-    destroy: Видалити студента
-    """
+    
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
     
@@ -137,15 +119,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API для управління групами.
-    
-    list: Отримати список всіх груп
-    create: Створити нову групу
-    retrieve: Отримати деталі групи
-    update: Оновити групу
-    destroy: Видалити групу
-    """
+ 
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticated]
     
@@ -169,15 +143,8 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class LessonViewSet(viewsets.ModelViewSet):
-    """
-    API для управління уроками.
     
-    list: Отримати список всіх уроків
-    create: Створити новий урок
-    retrieve: Отримати деталі уроку
-    update: Оновити урок
-    destroy: Видалити урок
-    """
+
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated]
     
@@ -218,15 +185,7 @@ class LessonViewSet(viewsets.ModelViewSet):
 
 
 class AttendanceViewSet(viewsets.ModelViewSet):
-    """
-    API для управління відвідуванням.
-    
-    list: Отримати список всіх записів про відвідування
-    create: Створити новий запис про відвідування
-    retrieve: Отримати деталі запису про відвідування
-    update: Оновити запис про відвідування
-    destroy: Видалити запис про відвідування
-    """
+
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
     

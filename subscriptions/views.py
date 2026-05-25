@@ -1,12 +1,9 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import SubscriptionPlan, PricingTier, StudentSubscription
-from .serializers import (
+from api.serializers import (
     SubscriptionPlanSerializer,
     PricingTierSerializer,
     StudentSubscriptionSerializer
@@ -29,10 +26,7 @@ class SubscriptionPlanViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'ADMIN':
-            # Адмін бачить плани своїх філій
-            return SubscriptionPlan.objects.filter(
-                branch__in=user.branch_set.all()
-            )
+            return SubscriptionPlan.objects.all()
         return SubscriptionPlan.objects.none()
     
     @action(detail=False, methods=['get'])
@@ -69,9 +63,7 @@ class PricingTierViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'ADMIN':
-            return PricingTier.objects.filter(
-                plan__branch__in=user.branch_set.all()
-            )
+            return PricingTier.objects.all()
         return PricingTier.objects.none()
     
     @action(detail=False, methods=['get'])
@@ -105,9 +97,7 @@ class StudentSubscriptionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.role == 'ADMIN':
-            return StudentSubscription.objects.filter(
-                student__branch__in=user.branch_set.all()
-            )
+            return StudentSubscription.objects.all()
         return StudentSubscription.objects.none()
     
     @action(detail=False, methods=['get'])
@@ -122,7 +112,7 @@ class StudentSubscriptionViewSet(viewsets.ModelViewSet):
         
         subscriptions = StudentSubscription.objects.filter(student_id=student_id)
         serializer = self.get_serializer(subscriptions, many=True)
-        return Response(serializer.data)
+        return Response(subscriptions)
     
     @action(detail=False, methods=['get'])
     def by_subject(self, request):
