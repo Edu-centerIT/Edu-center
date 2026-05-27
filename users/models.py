@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
         ('TEACHER', 'Teacher'),
     ]
     
-    # ✅ БАЗОВІ ПОЛЯ (успадковані від AbstractUser)
+    # БАЗОВІ ПОЛЯ (успадковані від AbstractUser)
     # username - автоматично синхронізується з phone
     # email - VARCHAR(255)
     # first_name - VARCHAR(150)
@@ -58,7 +58,7 @@ class CustomUser(AbstractUser):
     # is_superuser - BOOLEAN
     # is_staff - BOOLEAN
     
-    # ✅ КАСТОМНІ ПОЛЯ
+    # КАСТОМНІ ПОЛЯ
     phone = models.CharField(
         max_length=15,
         unique=True,
@@ -77,14 +77,14 @@ class CustomUser(AbstractUser):
         help_text="Designates whether this user should be treated as active"
     )
     
-    # ✅ НАЛАШТУВАННЯ АУТЕНТИФІКАЦІЇ
+    # НАЛАШТУВАННЯ АУТЕНТИФІКАЦІЇ
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['email']
     
-    # ✅ КАСТОМНИЙ MANAGER
+    # КАСТОМНИЙ MANAGER
     objects = CustomUserManager()
     
-    # ✅ МЕТА-ІНФОРМАЦІЯ
+    # МЕТА-ІНФОРМАЦІЯ
     class Meta:
         db_table = 'users_customuser'
         verbose_name = 'Custom User'
@@ -108,7 +108,7 @@ class CustomUser(AbstractUser):
         """Строкове представлення користувача"""
         return f"{self.first_name} {self.last_name} ({self.phone})"
     
-    # ✅ ДОПОМІЖНІ МЕТОДИ
+    # ДОПОМІЖНІ МЕТОДИ
     
     def get_full_name(self):
         """Отримати повне ім'я користувача"""

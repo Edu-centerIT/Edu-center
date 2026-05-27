@@ -1,12 +1,11 @@
-#Список необхідних бібліотек
-
 Django==6.0.4
 djangorestframework==3.14.0
 drf-spectacular==0.27.0
 drf-spectacular[sidecar]==0.27.0
 pytz==2024.1
-sqlparse==0.4.4
-asgiref==3.7.1
+sqlparse>=0.5.0
+asgiref
 typing-extensions==4.7.1
 uritemplate==4.1.1
 inflection==0.5.1
+djangorestframework-simplejwt

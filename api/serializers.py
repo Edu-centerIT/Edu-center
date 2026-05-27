@@ -42,7 +42,8 @@ class ParentSerializer(serializers.ModelSerializer):
     """Serializer для батьків"""
     class Meta:
         model = Parent
-        fields = ['id', 'student', 'first_name', 'last_name', 'phone', 'email', 'relationship']
+        # Замінили first_name та last_name на name
+        fields = ['id', 'student', 'name', 'phone', 'email', 'relationship'] 
         read_only_fields = ['id']
 
 
